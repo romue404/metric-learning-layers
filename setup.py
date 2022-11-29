@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='Metric Learning Layers',
-      version='0.1',
+      version='0.1.0',
       description='A simple PyTorch package that includes the most common metric learning layers',
       author='Robert Müller',
       author_email='robert.mueller1990@googlemail.com',

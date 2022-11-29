@@ -4,7 +4,7 @@ this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
 
 setup(name='Metric Learning Layers',
-      version='0.1.1',
+      version='0.1.2',
       description='A simple PyTorch package that includes the most common metric learning layers',
       author='Robert Müller',
       author_email='robert.mueller1990@googlemail.com',

@@ -1,7 +1,7 @@
-import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from metric_learning_layers.utils import one_hot, heuristic_scale
 from typing import Union
 
 
@@ -10,9 +10,9 @@ class NormalizedLinear(nn.Linear):
     Normalizes the input features and class embeddings (prototypes) and computes their cosine similarity.
 
     Args:
-        in_features (int)    : Dimensionality of the input
-        out_features (int)   : Dimensionality of the output (e.g. number of classes)
-        num_sub_centers (int): Number of subcenters (default=1)
+        in_features (int)     : Dimensionality of the input
+        out_features (int)    : Dimensionality of the output (e.g. number of classes)
+        num_sub_centers (int) : Number of subcenters (default=1)
 
     Shape:
         - Input: :math:`(*, d_{in})`
@@ -37,23 +37,16 @@ class NormalizedLinear(nn.Linear):
         return self.similarities(data)
 
 
-def heuristic_scale(out_features: int):
-    return math.sqrt(2) * math.log(out_features - 1)
-
-
-def one_hot(labels: torch.Tensor, num_classes: int):
-    return F.one_hot(labels, num_classes=num_classes).float() if len(labels.shape) <= 1 else labels
-
-
 class ScaledNormalizedLinear(NormalizedLinear):
     r"""
-    Normalizes the input features and class embeddings (prototypes) and computes their scaled cosine similarity.
+    Normalizes the input features and class embeddings (prototypes) and computes their scaled cosine similarities.
 
     Args:
-        in_features (int)    : Dimensionality of the input
-        out_features (int)   : Dimensionality of the output (e.g. number of classes)
-        num_sub_centers (int): Number of subcenters (default=1)
-        scale (float)        : scale to multiply the cosine similarities by
+        in_features (int)     : Dimensionality of the input
+        out_features (int)    : Dimensionality of the output (e.g. number of classes)
+        num_sub_centers (int) : Number of subcenters (default=1)
+        scale (float)         : Scale to multiply the cosine similarities by
+        trainable_scale (bool): Whether the scale is trainable or fixed
 
     Shape:
         - Input: :math:`(*, d_{in})`
@@ -74,14 +67,15 @@ class ScaledNormalizedLinear(NormalizedLinear):
 
 class ScaledNormalizedLinearSqrt(ScaledNormalizedLinear):
     r"""
-    Normalizes the input features and class embeddings (prototypes) and computes their scaled cosine similarity.
+    Normalizes the input features and class embeddings (prototypes) and computes their scaled cosine similarities.
     Subsequently, the similarities are multiplied by the square root of the input dimensionality and scaled.
 
     Args:
-        in_features (int)    : Dimensionality of the input
-        out_features (int)   : Dimensionality of the output (e.g. number of classes)
-        num_sub_centers (int): Number of subcenters (default=1)
-        scale (float)        : scale of the square root of the input dimensionality
+        in_features (int)     : Dimensionality of the input
+        out_features (int)    : Dimensionality of the output (e.g. number of classes)
+        num_sub_centers (int) : Number of subcenters (default=1)
+        scale (float)         : Scale of the square root of the input dimensionality
+        trainable_scale (bool): Whether the scale is trainable or fixed
 
     Shape:
         - Input: :math:`(*, d_{in})`
@@ -99,25 +93,26 @@ class CosFace(ScaledNormalizedLinear):
     r"""
     CosFace: Large Margin Cosine Loss for Deep Face Recognition
     Paper: https://arxiv.org/abs/1801.09414
-    Normalizes the input features and class embeddings (prototypes) and computes their scaled cosine similarity.
+    Normalizes the input features and class embeddings (prototypes) and computes their scaled cosine similarities.
     Subsequently, a cosine margin is subtracted from the similarities
     of the true labels to achieve greater inter-class variance and minimizing intra-class variance.
 
     Args:
-        in_features (int)    : Dimensionality of the input
-        out_features (int)   : Dimensionality of the output (e.g. number of classes)
-        num_sub_centers (int): Number of subcenters (default=1)
-        scale (float)        : Scale to multiply the cosine similarities by
-        margin (float)       : Cosine margin
+        in_features (int)      : Dimensionality of the input
+        out_features (int)     : Dimensionality of the output (e.g. number of classes)
+        num_sub_centers (int)  : Number of subcenters (default=1)
+        scale (float)          : Scale to multiply the cosine similarities by
+        trainable_scale (bool) : Whether the scale is trainable or fixed
+        margin (float)         : Cosine margin
 
     Shape:
         - Input: :math:`(*, d_{in})`
         - Labels: :math:`(*)` or :math:`(*, d_{out})` either a list of int oder one_hot encoded labels
         - Output: :math:`(*, d_{out})`
     """
-    def __init__(self, *args, scale: Union[float, None] = 64,  margin: float = 0.5, **kwargs):
+    def __init__(self, *args, margin: float = 0.5, **kwargs):
         assert margin > 0.0, 'Margin must be > 0'
-        super().__init__(*args, scale=scale, **kwargs)
+        super().__init__(*args, **kwargs)
         self.margin = margin
 
     def apply_margin(self, sims: torch.Tensor, labels: torch.Tensor):
@@ -134,17 +129,18 @@ class ArcFace(CosFace):
     r"""
     ArcFace: Additive Angular Margin Loss for Deep Face Recognition
     Paper: https://arxiv.org/abs/1801.07698
-    Normalizes the input features and class embeddings (prototypes) and computes their scaled cosine similarity.
+    Normalizes the input features and class embeddings (prototypes) and computes their scaled cosine similarities.
     Subsequently, similarities and converted to radians and an additive angular margin is
     applied to the angular similarities of the true labels. Afterwards, the angular similarities
     are converted back to cosine similarities.
 
     Args:
-        in_features (int)    : Dimensionality of the input
-        out_features (int)   : Dimensionality of the output (e.g. number of classes)
-        num_sub_centers (int): Number of subcenters (default=1)
-        scale (float)        : Scale to multiply the cosine similarities by
-        margin (float)       : Additive angular margin
+        in_features (int)      : Dimensionality of the input
+        out_features (int)     : Dimensionality of the output (e.g. number of classes)
+        num_sub_centers (int)  : Number of subcenters (default=1)
+        scale (float)          : Scale to multiply the cosine similarities by
+        trainable_scale (bool) : Whether the scale is trainable or fixed
+        margin (float)         : Cosine margin
 
     Shape:
         - Input: :math:`(*, d_{in})`
@@ -162,7 +158,7 @@ class FixedAdaCos(CosFace):
     r"""
     AdaCos: Adaptively Scaling Cosine Logits for Effectively Learning Deep Face Representations
     Paper: https://arxiv.org/abs/1905.00292
-    Normalizes the input features and class embeddings (prototypes) and computes their scaled cosine similarity.
+    Normalizes the input features and class embeddings (prototypes) and computes their scaled cosine similarities.
     The scale is fixed according to a heuristic that depends on
     the number of output features (see paper for more details).
 
@@ -186,7 +182,7 @@ class AdaCos(FixedAdaCos):
     r"""
     AdaCos: Adaptively Scaling Cosine Logits for Effectively Learning Deep Face Representations
     Paper: https://arxiv.org/abs/1905.00292
-    Normalizes the input features and class embeddings (prototypes) and computes their scaled cosine similarity.
+    Normalizes the input features and class embeddings (prototypes) and computes their scaled cosine similarities.
     The scale is initialized according to a heuristic that depends on
     the number of output features (see paper for more details). The scale is updated during training.
     This implementation supports soft targets (i.e. can be used with mixup)
@@ -221,7 +217,7 @@ class DeepNCM(nn.Module):
     r"""
     DeepNCM: Deep Nearest Class Mean Classifiers
     Paper: https://openreview.net/forum?id=rkPLZ4JPM
-    Normalizes the input features and class embeddings (prototypes) and computes their scaled cosine similarity.
+    Normalizes the input features and class embeddings (prototypes) and computes their scaled cosine similarities.
     The prototypes are computed by an exponential moving average (EMA) of the features in the corresponding class.
 
     Args:
@@ -235,28 +231,29 @@ class DeepNCM(nn.Module):
         - Labels: :math:`(*)` or :math:`(*, d_{out})` either a list of int oder one_hot encoded labels
         - Output: :math:`(*, d_{out})`
     """
-    def __init__(self, in_features: int, out_features: int, alpha: float = 0.9, scale: Union[float, None] = None):
+    def __init__(self, in_features: int, out_features: int, alpha: float = 0.9):
         super().__init__()
         self.means = nn.Parameter(torch.zeros(out_features, in_features), requires_grad=False)
         self.running_means = nn.Parameter(torch.zeros(out_features, in_features), requires_grad=False)
         self.alpha = alpha
         self.features = in_features
         self.classes = out_features
-        self.scale = scale if scale is not None else heuristic_scale(out_features)
+        self.scale = heuristic_scale(out_features)
 
     def forward(self, x: torch.Tensor, labels: torch.Tensor):
-        cos_sims_scaled = (F.normalize(x, dim=-1, p=2) @ self.means.T) * self.scale
+        cos_sims_scaled = (F.normalize(x, dim=-1) @ F.normalize(self.means, dim=-1).T) * self.scale
         if self.training:
             self.update_means(x, labels)
         return cos_sims_scaled
 
     def update_means(self, logits: torch.Tensor, labels: torch.Tensor):
-        mu, update = self.compute_mean(F.normalize(logits, dim=-1, p=2), labels)
-        for c, u in enumerate(update):
-            if u:
-                self.running_means.data[c, :] = mu[c, :]
-            else:
-                self.running_means.data[c, :] = self.means.data[c, :]
+        mu, update = self.compute_mean(logits, labels)
+
+        c_update = [i for i, c in enumerate(update) if c]
+        c_noop   = [i for i, c in enumerate(update) if not c]
+
+        self.running_means.data[c_update, :] = mu[c_update, :]
+        self.running_means.data[c_noop, :]   = self.means.data[c_noop, :]
         self.means.data = self.alpha * self.means.data + (1 - self.alpha) * self.running_means
 
     @torch.inference_mode()

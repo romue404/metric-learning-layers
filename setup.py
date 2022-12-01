@@ -5,7 +5,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(name='Metric Learning Layers',
       version='0.1.5',
-      description='A simple PyTorch package that includes the most common metric learning layers',
+      description='A simple PyTorch package that includes the most common metric learning layers.',
       author='Robert Müller',
       author_email='robert.mueller1990@googlemail.com',
       url='https://github.com/romue404/metric_learning_layers',
@@ -14,6 +14,7 @@ setup(name='Metric Learning Layers',
             'metric learning',
             'artificial intelligence',
             'pytorch',
+            'classification',
             'separability',
             'large margin'
       ],

@@ -1,13 +1,13 @@
 # This workflows will upload a Python Package using Twine when a release is created
 # For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
-# taken from https://github.com/lucidrains/x-transformers/blob/1.4.0/.github/workflows/python-publish.yml
+# Inspired by https://github.com/lucidrains/x-transformers/blob/1.4.0/.github/workflows/python-publish.yml
 
 name: Upload Python Package
 
 on:
   push:
     tags:
-      - '*' # Push events to matching v*, i.e. v1.0, v20.15.10
+      - '*' # all tags will trigger a new release
 
 jobs:
   build:

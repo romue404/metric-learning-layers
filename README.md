@@ -12,14 +12,14 @@ where $||x|| = 1$ and $||W_{*, j}|| = 1 \,\, \forall j= 1\dots c$ and $s \in \ma
 
 ## Supported Layers
 We currently support the following layers:
-* [x] [NormalizedLinear](https://arxiv.org/abs/1811.12649)
+* [x] [ScaledNormalizedLinear](https://arxiv.org/abs/1811.12649)
 * [x] [CosFace](https://arxiv.org/abs/1801.09414)
 * [x] [ArcFace](https://arxiv.org/abs/1801.07698)
 * [x] [AdaCos and FixedAdaCos](https://arxiv.org/abs/1905.00292)
 * [x] [DeepNCM](https://openreview.net/forum?id=rkPLZ4JPM)
 
-You can use multiple sub-centers for all layers except for DeepNCM. If you do not specify a scale, 
-MLL will use the heuristic from AdaCos $s = \sqrt{2} * \log{(c-1)}$.
+__You can use multiple sub-centers__ for all layers except for DeepNCM. If you do not specify a scale, 
+MLL will use the __heuristic scale from AdaCos__ $s = \sqrt{2} * \log{(c-1)}$.
 
 ## Install MLL
 Simply run:

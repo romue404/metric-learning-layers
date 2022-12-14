@@ -1,4 +1,4 @@
-# MLL - Metric Learning Layers
+# 🎯 MLL - Metric Learning Layers
 MLL is a simple [PyTorch](https://pytorch.org/) package that includes the most common metric learning layers.
 MLL only includes layers that are not dependent on negative sample mining and therefore drop in replacements for 
 the final linear layer used in classification problems.
@@ -19,7 +19,7 @@ We currently support the following layers:
 MLL gives you the following advantages:
 * [x] __Sub-centers__: You can use multiple sub-centers for all layers except for DeepNCM.
 * [x] __Heuristic scale__: MLL will use the heuristic scale from AdaCos $s = \sqrt{2} * \log{(c-1)}$ if not specified otherwise.
-* [x] __Soft-target__: All MLL-layers can be used in conjunction with soft-targets (e.g. with [Mixup](https://arxiv.org/abs/1710.09412)).
+* [x] __Soft-targets__: All MLL-layers can be used in conjunction with soft-targets (e.g. with [Mixup](https://arxiv.org/abs/1710.09412)).
 
 ## Install MLL
 Simply run:

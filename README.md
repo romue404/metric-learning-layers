@@ -51,6 +51,6 @@ adacos = mll.AdaCos(in_features=128,
                     num_sub_centers=1 
                     )
 
-ac_out = arcface(rnd_batch)  # AdaCos does not require labels
-# af_out: torch.Size([32, 10])
+ac_out = adacos(rnd_batch)  # AdaCos does not require labels
+# ac_out: torch.Size([32, 10])
 ```

@@ -2,8 +2,7 @@
 MLL is a simple [PyTorch](https://pytorch.org/) package that includes the most common metric learning layers.
 MLL only includes layers that are not dependent on negative sample mining and therefore drop in replacements for 
 the final linear layer used in classification problems.
-All layers aim to achieve greater inter-class variance and minimizing intra-class variance. 
-Moreover, all MLL-layers can be used in conjunction with soft-targets (e.g. with [Mixup](https://arxiv.org/abs/1710.09412)).
+All layers aim to achieve greater inter-class variance and minimizing intra-class variance.
 
 The basis of all these layers is the scaled cosine similarity $$y = xW * s$$ between 
 the $d$-dimensional input vectors (features) $x \in \mathbb{R}^{1 \times d}$ and the 
@@ -16,10 +15,13 @@ We currently support the following layers:
 * [x] [CosFace](https://arxiv.org/abs/1801.09414)
 * [x] [ArcFace](https://arxiv.org/abs/1801.07698)
 * [x] [AdaCos and FixedAdaCos](https://arxiv.org/abs/1905.00292)
-* [x] [DeepNCM](https://openreview.net/forum?id=rkPLZ4JPM)
+* [x] [DeepNCM](https://openreview.net/forum?id=rkPLZ4JPM)  
 
-__You can use multiple sub-centers__ for all layers except for DeepNCM. If you do not specify a scale, 
-MLL will use the __heuristic scale from AdaCos__ $s = \sqrt{2} * \log{(c-1)}$.
+MLL gives you the following advantages:
+* __Sub-centers__: You can use multiple sub-centers for all layers except for DeepNCM.
+* __Heuristic scale__: If you do not specify a scale, 
+MLL will use the heuristic scale from AdaCos $s = \sqrt{2} * \log{(c-1)}$.
+* __Soft-target__: All MLL-layers can be used in conjunction with soft-targets (e.g. with [Mixup](https://arxiv.org/abs/1710.09412)).
 
 ## Install MLL
 Simply run:

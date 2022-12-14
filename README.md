@@ -2,8 +2,7 @@
 MLL is a simple [PyTorch](https://pytorch.org/) package that includes the most common metric learning layers.
 MLL only includes layers that are not dependent on negative sample mining and therefore drop in replacements for 
 the final linear layer used in classification problems.
-All layers aim to achieve greater inter-class variance and minimizing intra-class variance.
-
+All layers aim to achieve greater inter-class variance and minimizing intra-class variance.  
 The basis of all these layers is the scaled cosine similarity $$y = xW * s$$ between 
 the $d$-dimensional input vectors (features) $x \in \mathbb{R}^{1 \times d}$ and the 
 $c$ class weights (prototypes, embeddings) $W \in \mathbb{R}^{d \times c}$
@@ -18,10 +17,9 @@ We currently support the following layers:
 * [x] [DeepNCM](https://openreview.net/forum?id=rkPLZ4JPM)  
 
 MLL gives you the following advantages:
-* __Sub-centers__: You can use multiple sub-centers for all layers except for DeepNCM.
-* __Heuristic scale__: If you do not specify a scale, 
-MLL will use the heuristic scale from AdaCos $s = \sqrt{2} * \log{(c-1)}$.
-* __Soft-target__: All MLL-layers can be used in conjunction with soft-targets (e.g. with [Mixup](https://arxiv.org/abs/1710.09412)).
+* [x] __Sub-centers__: You can use multiple sub-centers for all layers except for DeepNCM.
+* [x] __Heuristic scale__: MLL will use the heuristic scale from AdaCos $s = \sqrt{2} * \log{(c-1)}$ if not specified otherwise.
+* [x] __Soft-target__: All MLL-layers can be used in conjunction with soft-targets (e.g. with [Mixup](https://arxiv.org/abs/1710.09412)).
 
 ## Install MLL
 Simply run:
